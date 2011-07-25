@@ -50,9 +50,9 @@ Open http://127.0.0.1:9999/ on client.
 
 	- for example, to increase "normal" shaper limits traffic speed to 10000 B/s:
 
-		< {shaper, normal, {maxrate, 1000}}.
-		---
-		> {shaper, normal, {maxrate, 10000}}.
+			< {shaper, normal, {maxrate, 1000}}.
+			---
+			> {shaper, normal, {maxrate, 10000}}.
 
 ### Todo
 
@@ -60,6 +60,3 @@ Open http://127.0.0.1:9999/ on client.
 - better configuration management (web GUI, HTTP/XMLRPC API...)
 - make Python package to simplify installation
 
-### License
-
-WTFPL
