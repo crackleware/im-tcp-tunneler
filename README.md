@@ -8,9 +8,9 @@
 - dnspython (http://pypi.python.org/pypi/dnspython/1.9.4)
 - pyxmpp (http://pypi.python.org/pypi/pyxmpp/1.1.2)
 
-### Usage
+### Usage example
 
-Server tunnels.conf example:
+Server tunnels.conf:
 
 	exposed = [
 		# 'IP:PORT',
@@ -22,12 +22,12 @@ Server tunnels.conf example:
 		# 'IP:PORT->IP:PORT!JID',
 		]
 
-Server command-line example:
+Server command-line:
 
 	$ virtualenv env; source env/bin/activate; pip install pyxmpp; pip install dnspython
     $ python xmpp_tcp_tunneler_pyxmpp.py someone@domain1.com/tunneler ***password*** tls_noverify tunnels.conf
 
-Client tunnels.conf example:
+Client tunnels.conf:
 
 	exposed = [
 		# 'IP:PORT',
@@ -39,7 +39,7 @@ Client tunnels.conf example:
 		'127.0.0.1:2222->127.0.0.1:22!someone@domain1.com/tunneler',
 		]
 
-Client command-line example:
+Client command-line:
 
 	$ virtualenv env; source env/bin/activate; pip install pyxmpp; pip install dnspython
 	$ python xmpp_tcp_tunneler_pyxmpp.py someone@domain2.com/tunneler ***password*** tls_noverify tunnels.conf
@@ -48,7 +48,7 @@ Open http://127.0.0.1:9999/ on client.
 
 ### Tested on
 
-- ejabberd (http://www.ejabberd.im/):
+- ejabberd ( http://www.ejabberd.im/ ):
 
 	- for example, to increase "normal" shaper limits traffic speed to 10000 B/s:
 
