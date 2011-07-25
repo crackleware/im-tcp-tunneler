@@ -7,6 +7,7 @@ to run:
     virtualenv env
     source env/bin/activate
     pip install xmpppy
+    pip install dnspython
     python xmpp_tcp_tunneler_pyxmpp.py ...
 """
 

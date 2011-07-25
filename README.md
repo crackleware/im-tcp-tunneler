@@ -4,6 +4,8 @@
 
 - Python (2.6+)
 - (optional but suggested) virtualenv
+- libxml2 (http://xmlsoft.org/)
+- dnspython (http://pypi.python.org/pypi/dnspython/1.9.4)
 - pyxmpp (http://pypi.python.org/pypi/pyxmpp/1.1.2)
 
 ### Usage
@@ -22,7 +24,7 @@ Server tunnels.conf example:
 
 Server command-line example:
 
-	$ virtualenv env; source env/bin/activate; pip install pyxmpp
+	$ virtualenv env; source env/bin/activate; pip install pyxmpp; pip install dnspython
     $ python xmpp_tcp_tunneler_pyxmpp.py someone@domain1.com/tunneler ***password*** tls_noverify tunnels.conf
 
 Client tunnels.conf example:
@@ -39,7 +41,7 @@ Client tunnels.conf example:
 
 Client command-line example:
 
-	$ virtualenv env; source env/bin/activate; pip install pyxmpp
+	$ virtualenv env; source env/bin/activate; pip install pyxmpp; pip install dnspython
 	$ python xmpp_tcp_tunneler_pyxmpp.py someone@domain2.com/tunneler ***password*** tls_noverify tunnels.conf
 
 Open http://127.0.0.1:9999/ on client.
