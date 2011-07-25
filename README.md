@@ -62,3 +62,6 @@ Open http://127.0.0.1:9999/ on client.
 - better configuration management (web GUI, HTTP/XMLRPC API...)
 - make Python package to simplify installation
 
+### Related
+
+- Xmpp-tunnel: IP tunneling over XMPP (Android support) - http://jahrome.free.fr/index.php/xmpp-tunnel-ip-tunneling-xmpp-android-ssh?lang=en (https://github.com/jahrome/xmpp-tunnel)
