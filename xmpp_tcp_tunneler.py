@@ -187,11 +187,13 @@ def handle_message(from_jid, to_jid, body):
 
 def setup_tunnels(filename):
     execfile(filename, globals())
-    if DBG1: print 'exposed:'
-    pprint.pprint(exposed)
-    if DBG1: print 'forwarded:'
-    pprint.pprint(forwarded)
-    if DBG1: print 'web_port:', web_port
+    
+    if DBG1:
+        print 'exposed:'
+        pprint.pprint(exposed)
+        print 'forwarded:'
+        pprint.pprint(forwarded)
+        print 'web_port:', web_port
 
     setup_accept_and_forward()
 
