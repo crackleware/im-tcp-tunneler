@@ -61,6 +61,7 @@ Open http://127.0.0.1:9999/ on client.
 - access control
 - better configuration management (web GUI, HTTP/XMLRPC API...)
 - make Python package to simplify installation
+- investigate http://xmpp.org/extensions/xep-0047.html
 
 ### Related
 
