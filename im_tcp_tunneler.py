@@ -8,9 +8,9 @@ import traceback
 import socket
 import pprint
 
-exposed = [
-    # 'IP:PORT', ...
-    ]
+exposed = {
+    # 'IP:PORT': ['JID', ...], ...
+    }
 
 forwarded = [
     # 'IP:PORT->IP:PORT!JID', ...
@@ -18,8 +18,10 @@ forwarded = [
 
 web_port = None
 
-DBG1 = True
-DBG2 = False
+DBG1 = 0
+DBG2 = 0
+
+BUFFERING = 0
 
 def send_xmpp_message(from_jid, to_jid, body): raise NotImplemented
 def get_client_jid(): raise NotImplemented
@@ -40,6 +42,9 @@ class Connection:
         self.id = str(uuid.uuid4())
         self.sock = None
         self.remote_jid = None
+        self.buffer = ''
+        #self.bufsize = 32000
+        self.bufsize = 15000
     def __repr__(self):
         return '%s(id=%r, remote_jid=%r)' % (self.__class__.__name__, self.id, self.remote_jid)
     
@@ -54,7 +59,10 @@ def s2x_socket_listener((src_addr, src_port), (dst_addr, dst_port), dst_jid):
     sock.listen(5)
     while 1:
         conn, addr = sock.accept()
-        conn.settimeout(0.3)
+        if BUFFERING:
+            conn.settimeout(0.01)
+        else:
+            conn.settimeout(0.3)
         if DBG1:
             print 's2x_socket_listener(%s:%d->%s:%d!%s), accepted: %r' % (
                 src_addr, src_port, dst_addr, dst_port, dst_jid, (conn, addr))
@@ -75,14 +83,28 @@ def connection_handler(c):
         try: d = c.sock.recv(1024)
         except socket.timeout:
             if DBG2: print 'socket.timeout', c.id
+            if BUFFERING:
+                if c.buffer:
+                    d = c.buffer
+                    c.buffer = ''
+                    send_xmpp_message(get_client_jid(), c.remote_jid,
+                                      'DATA %s %s' % (c.id, encode_data(d)))
             continue
         except socket.error:
             if DBG1: traceback.print_exc()
             break
         if DBG2: print 'd: %r' % d
         if not d: break
-        send_xmpp_message(get_client_jid(), c.remote_jid,
-                          'DATA %s %s' % (c.id, d.encode('hex')))
+        if not BUFFERING:
+            send_xmpp_message(get_client_jid(), c.remote_jid,
+                              'DATA %s %s' % (c.id, encode_data(d)))
+        else:
+            c.buffer += d
+            if len(c.buffer) > c.bufsize:
+                d = c.buffer[0:c.bufsize]
+                c.buffer = c.buffer[c.bufsize:]
+                send_xmpp_message(get_client_jid(), c.remote_jid,
+                                  'DATA %s %s' % (c.id, encode_data(d)))
     try:
         c.sock.close()
         c.sock.recv(1024)
@@ -93,6 +115,11 @@ def connection_handler(c):
             del conns[c.id]
             if DBG2: print 'del conns[%r]' % c.id
         if DBG2: print conns
+    if BUFFERING:
+        # flush
+        d = c.buffer
+        send_xmpp_message(get_client_jid(), c.remote_jid,
+                          'DATA %s %s' % (c.id, encode_data(d)))
     send_xmpp_message(get_client_jid(), c.remote_jid,
                       'CLOSE %s' % (c.id))
 
@@ -118,7 +145,8 @@ def handle_message(from_jid, to_jid, body):
 
         if body.startswith('CONNECT '):
             _, addr_port, conn_id = body.split(' ')
-            if addr_port in exposed:
+            if addr_port in exposed and ('*' in exposed[addr_port] or from_jid in exposed[addr_port]):
+                print 'im_tcp_tunneler: connection allowed for %s to %s' % (from_jid, addr_port)
                 addr, port = addr_port.split(':')
                 port = int(port)
 
@@ -164,15 +192,19 @@ def handle_message(from_jid, to_jid, body):
         #     pass
 
         elif body.startswith('DATA '):
-            _, conn_id, data = body.split()
-            data = data.decode('hex')
+            #_, conn_id, data = body.split()
+            a = body.find(' ')+1
+            b = body.find(' ', a)
+            conn_id = body[a:b]
+            data = body[b+1:]
+            data = decode_data(data)
             if DBG2: print 'data: %r' % data
             with lock:
                 c = conns.get(conn_id, None)
                 if DBG2: print conns
             if c:
                 c.sock.send(data)
-                time.sleep(0.1)
+                #time.sleep(0.01)
                 # resp = 'DATA_RESULT %s OK' % conn_id
             else:
                 resp = 'DATA_RESULT %s ERROR unknown connection id' % conn_id
@@ -202,4 +234,22 @@ def setup_tunnels(filename):
         t = threading.Thread(target=httpd.serve_forever)
         t.setDaemon(True)
         t.start()
+
+data_coding_mode = 'hex' # for xmpp
+
+def encode_data(data):
+    if data_coding_mode == 'hex':
+        return data.encode('hex')
+    elif data_coding_mode == 'base64':
+        return data.encode('base64')
+    else:
+        assert False
+
+def decode_data(data):
+    if data_coding_mode == 'hex':
+        return data.decode('hex')
+    elif data_coding_mode == 'base64':
+        return data.decode('base64')
+    else:
+        assert False
 

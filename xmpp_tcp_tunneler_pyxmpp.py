@@ -95,7 +95,7 @@ class MsgHandler(object):
 
     def message(self,stanza):
         if stanza.get_type() == 'chat':
-            xmpp_tcp_tunneler.handle_message(stanza.get_from_jid().as_unicode(),
+            im_tcp_tunneler.handle_message(stanza.get_from_jid().as_unicode(),
                                              stanza.get_to_jid().as_unicode(),
                                              stanza.get_body())
         return True
@@ -232,7 +232,7 @@ class Client(JabberClient):
         print u"Roster item updated:"
         self.print_roster_item(item)
 
-import xmpp_tcp_tunneler
+import im_tcp_tunneler
 
 def send_xmpp_message(from_jid, to_jid, txt):
     msg = Message(stanza_type = 'chat',
@@ -240,11 +240,11 @@ def send_xmpp_message(from_jid, to_jid, txt):
                   to_jid = JID(to_jid),
                   body = txt)
     client.stream.send(msg)
-xmpp_tcp_tunneler.send_xmpp_message = send_xmpp_message
+im_tcp_tunneler.send_xmpp_message = send_xmpp_message
 
 def get_client_jid():
     return client.stream.my_jid.as_unicode()
-xmpp_tcp_tunneler.get_client_jid = get_client_jid
+im_tcp_tunneler.get_client_jid = get_client_jid
 
         
 if __name__ == '__main__':
@@ -271,7 +271,7 @@ if __name__ == '__main__':
         print "\t%s test@localhost verysecret tls_noverify tunnels.pyconf" % (sys.argv[0],)
         sys.exit(1)
 
-    xmpp_tcp_tunneler.setup_tunnels(sys.argv[-1])
+    im_tcp_tunneler.setup_tunnels(sys.argv[-1])
         
     print u"creating client..."
 
@@ -293,3 +293,4 @@ if __name__ == '__main__':
 
     print u"exiting..."
     # vi: sts=4 et sw=4
+

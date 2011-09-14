@@ -29,7 +29,7 @@ from pyxmpp2.ext.version import VersionProvider
 from pyxmpp2.mainloop.select import SelectMainLoop
 from pyxmpp2.mainloop.threads import ThreadPool
 
-import xmpp_tcp_tunneler
+import im_tcp_tunneler
 
 def send_xmpp_message(from_jid, to_jid, txt):
     msg = Message(stanza_type = 'chat',
@@ -38,11 +38,11 @@ def send_xmpp_message(from_jid, to_jid, txt):
                   subject = None, body = txt,
                   thread = None)
     bot.client.send(msg)
-xmpp_tcp_tunneler.send_xmpp_message = send_xmpp_message
+im_tcp_tunneler.send_xmpp_message = send_xmpp_message
 
 def get_client_jid():
     return bot.client.jid.as_unicode()
-xmpp_tcp_tunneler.get_client_jid = get_client_jid
+im_tcp_tunneler.get_client_jid = get_client_jid
 
 
 class Bot(EventHandler, XMPPFeatureHandler):
@@ -115,7 +115,7 @@ class Bot(EventHandler, XMPPFeatureHandler):
             to_jid = stanza.to_jid.as_unicode()
             from_jid = stanza.from_jid.as_unicode()
             
-            xmpp_tcp_tunneler.handle_message(from_jid, to_jid, stanza.body)
+            im_tcp_tunneler.handle_message(from_jid, to_jid, stanza.body)
             
         return True
         
@@ -174,7 +174,7 @@ def main():
             logger.addHandler(handler)
             logger.propagate = False
 
-    xmpp_tcp_tunneler.setup_tunnels(args.tunnel_conf)
+    im_tcp_tunneler.setup_tunnels(args.tunnel_conf)
 
     global bot
     bot = Bot(JID(args.jid), settings)
