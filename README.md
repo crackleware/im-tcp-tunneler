@@ -11,7 +11,11 @@
     - pyxmpp (http://pypi.python.org/pypi/pyxmpp/1.1.2)
 
 - for Skype:
-    - Skype4Py (http://pypi.python.org/pypi/Skype4Py/1.0.32.0)
+    - skype4py (http://pypi.python.org/pypi/Skype4Py/1.0.32.0)
+
+- for encryption:
+    - python-gnupg (http://pypi.python.org/pypi/python-gnupg/0.2.8)
+    - m2crypto (http://pypi.python.org/pypi/M2Crypto/0.21.1)
 
 ### Usage example
 
@@ -67,11 +71,27 @@ Tested on:
 
 Structure of tunnels.conf is the same as for XMPP. JID is actually skypename.
 
-	$ virtualenv env; source env/bin/activate; pip install Skype4Py
+	$ virtualenv env; source env/bin/activate; pip install skype4py
     $ python2 skype_tcp_tunneler.py tunnels.conf
+
+##### Encryption (GPG + AES)
+
+Install:
+
+	$ pip install python-gnupg m2crypto
+
+In tunnels.conf add:
+
+	gpg_keys = [
+		# 'JID' or ('JID', 'keyid'), ...
+        'someone@domain1.com', # or ('skype-buddy-1', 'someone@domain1.com'),
+		]
+
+    gpg_passphrase = PROMPT # or AGENT or 'PASSWORD'
 
 ### Todo
 
+- encrypt whole message data
 - better access control
 - better configuration management (web GUI, HTTP/XMLRPC API...)
 - make Python package to simplify installation
@@ -80,4 +100,5 @@ Structure of tunnels.conf is the same as for XMPP. JID is actually skypename.
 ### Related
 
 - Xmpp-tunnel: IP tunneling over XMPP (Android support) - http://jahrome.free.fr/index.php/xmpp-tunnel-ip-tunneling-xmpp-android-ssh?lang=en (https://github.com/jahrome/xmpp-tunnel)
-
+- http://code.google.com/p/skypeproxy/ - peer2peer network tunneling tool (Java)
+- http://jonathanverner.appspot.com/download - Skype Proxy - A program for forwarding TCP/IP connections over Skype. (C++, Qt4)
