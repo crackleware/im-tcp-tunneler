@@ -74,7 +74,7 @@ Structure of tunnels.conf is the same as for XMPP. JID is actually skypename.
 	$ virtualenv env; source env/bin/activate; pip install skype4py
     $ python2 skype_tcp_tunneler.py tunnels.conf
 
-##### Encryption (GPG + AES)
+#### Encryption (GPG + AES)
 
 Install:
 
