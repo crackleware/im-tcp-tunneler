@@ -1,4 +1,4 @@
-## TCP tunneler over instant messaging clients (XMPP, Skype, ...)
+## TCP tunneler over instant messaging clients (XMPP, Skype)
 
 ### Requirements
 
@@ -35,7 +35,7 @@ Server tunnels.conf:
 
 Server command-line:
 
-	$ virtualenv env; source env/bin/activate; pip install pyxmpp; pip install dnspython
+	$ virtualenv env; source env/bin/activate; pip install pyxmpp dnspython
     $ python xmpp_tcp_tunneler_pyxmpp.py someone@domain1.com/tunneler ***password*** tls_noverify tunnels.conf
 
 Client tunnels.conf:
@@ -52,7 +52,7 @@ Client tunnels.conf:
 
 Client command-line:
 
-	$ virtualenv env; source env/bin/activate; pip install pyxmpp; pip install dnspython
+	$ virtualenv env; source env/bin/activate; pip install pyxmpp dnspython
 	$ python xmpp_tcp_tunneler_pyxmpp.py someone@domain2.com/tunneler ***password*** tls_noverify tunnels.conf
 
 Open http://127.0.0.1:9999/ on client.
@@ -87,10 +87,11 @@ In tunnels.conf add:
         'someone@domain1.com', # or ('skype-buddy-1', 'someone@domain1.com'),
 		]
 
-    gpg_passphrase = PROMPT # or AGENT or 'PASSWORD'
+    gpg_passphrase = None # PROMPT or AGENT or 'PASSWORD'
 
 ### Todo
 
+- separate tunneling and crypto
 - encrypt whole message data
 - better access control
 - better configuration management (web GUI, HTTP/XMLRPC API...)
