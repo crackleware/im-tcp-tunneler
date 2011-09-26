@@ -91,7 +91,14 @@ In tunnels.conf add:
 
 ### Todo
 
+- tests
+- rename jids to addrs
+- implement tcp_tcp_tunneler.py
 - separate tunneling and crypto
+- rename gpg_keys to crypto_pub_keys
+- add crypto_pvt_key config var
+- support existing gpg keys as well as keys generated with gen_tunnel_key.py ('gpg:...', 'rsa:...')
+- implement gen_tunnel_key.py which will append config file with crypto_pvt_key = 'rsa:...'
 - encrypt whole message data
 - better access control
 - better configuration management (web GUI, HTTP/XMLRPC API...)
@@ -103,3 +110,7 @@ In tunnels.conf add:
 - Xmpp-tunnel: IP tunneling over XMPP (Android support) - http://jahrome.free.fr/index.php/xmpp-tunnel-ip-tunneling-xmpp-android-ssh?lang=en (https://github.com/jahrome/xmpp-tunnel)
 - http://code.google.com/p/skypeproxy/ - peer2peer network tunneling tool (Java)
 - http://jonathanverner.appspot.com/download - Skype Proxy - A program for forwarding TCP/IP connections over Skype. (C++, Qt4)
+
+### Contact
+
+predrg@gmail.com
