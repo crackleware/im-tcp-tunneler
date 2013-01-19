@@ -175,13 +175,17 @@ def handle_message(from_jid, to_jid, body):
 
         if body.startswith('CONNECT '):
             _, addr_port, conn_id, ek = body.split(' ')
-            if addr_port in exposed and ('*' in exposed[addr_port] or from_jid in exposed[addr_port]):
+            from_jid_norecource , _ = from_jid.split('/') # no need to specify the Recource in .conf files, or if not then no error occur
+            
+            c = Connection()
+            c.id = conn_id # needed in line 216 if errors occur
+            
+            if addr_port in exposed and ('*' in exposed[addr_port] or from_jid in exposed[addr_port] or from_jid_norecource in exposed[addr_port]): # also chek if jid without Recource is in .conf
                 print 'im_tcp_tunneler: connection allowed for %s to %s' % (from_jid, addr_port)
                 addr, port = addr_port.split(':')
                 port = int(port)
 
-                c = Connection()
-                c.id = conn_id
+                
                 c.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 c.sock.connect((addr, port))
                 c.remote_jid = from_jid
@@ -207,6 +211,8 @@ def handle_message(from_jid, to_jid, body):
                 resp = 'CONNECT_RESULT %s OK %s' % (c.id, ek2)
 
             else:
+            	if DBG1:
+            	    print 'im_tcp_tunneler: connection refused for %s to %s' % (from_jid, addr_port) #useful for debugging which adress gets refused
                 resp = 'CONNECT_RESULT %s ERROR -' % c.id
 
         elif body.startswith('CONNECT_RESULT '):
