@@ -21,6 +21,8 @@
 
 #### XMPP
 
+Enter JID's in lowercase
+
 Server tunnels.conf:
 
 	exposed = {
