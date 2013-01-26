@@ -214,8 +214,8 @@ def handle_message(from_jid, to_jid, body):
                 resp = 'CONNECT_RESULT %s OK %s' % (c.id, ek2)
 
             else:
-            	if DBG1:
-            	    print 'im_tcp_tunneler: connection refused for %s to %s' % (from_jid, addr_port) #useful for debugging which adress gets refused
+                if DBG1:
+                    print 'im_tcp_tunneler: connection refused for %s to %s' % (from_jid, addr_port) #useful for debugging which adress gets refused
                 resp = 'CONNECT_RESULT %s ERROR -' % c.id
 
         elif body.startswith('CONNECT_RESULT '):
