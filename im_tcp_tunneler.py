@@ -70,6 +70,9 @@ class Connection:
     
 conns = {}
 
+def get_num_of_connections():
+    with lock: return len(conns)
+
 lock = threading.RLock()
 
 def s2x_socket_listener((src_addr, src_port), (dst_addr, dst_port), dst_jid):
@@ -270,14 +273,10 @@ def handle_message(from_jid, to_jid, body):
         traceback.print_exc()
 
 def setup_tunnels(filename):
-    execfile(filename, globals())
-    
-    if DBG1:
-        print 'exposed:'
-        pprint.pprint(exposed)
-        print 'forwarded:'
-        pprint.pprint(forwarded)
-        print 'web_port:', web_port
+    ns = {}
+    execfile(filename, ns)
+
+    globals().update(ns)
 
     if gpg_keys:
         global gpg, gpg_passphrase
@@ -297,6 +296,8 @@ def setup_tunnels(filename):
     #     t = threading.Thread(target=httpd.serve_forever)
     #     t.setDaemon(True)
     #     t.start()
+
+    return ns
 
 data_coding_mode = 'hex' # for xmpp
 

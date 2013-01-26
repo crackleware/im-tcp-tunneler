@@ -3,6 +3,7 @@ import time
 import traceback
 import os
 import threading
+import signal
 
 DBG1 = 0
 DBG2 = 0
@@ -30,6 +31,9 @@ def send_xmpp_message(from_jid, to_jid, txt):
                 print e, '- trying again'
             else:
                 break
+        else:
+            if config_ns.get('skype_strict_errors', False):
+                global keep_running; keep_running = False
     except:
         traceback.print_exc()
 im_tcp_tunneler.send_xmpp_message = send_xmpp_message
@@ -38,13 +42,13 @@ def get_client_jid():
     return skype.CurrentUser.Handle
 im_tcp_tunneler.get_client_jid = get_client_jid
 
-im_tcp_tunneler.setup_tunnels(sys.argv[-1])
+config_ns = im_tcp_tunneler.setup_tunnels(sys.argv[-1])
 
 if 0: im_tcp_tunneler.data_coding_mode = 'raw'
 
 import Skype4Py
 
-proto = os.environ.get('SKYPE_TCP_TUNNELER_PROTO', None)
+proto = os.environ.get('SKYPE_PREFFERED_PROTO', None)
 if proto: skype = Skype4Py.Skype(Transport=proto)
 else:     skype = Skype4Py.Skype()
 
@@ -57,7 +61,13 @@ def onApplicationReceiving(app_, streams):
         for strm in list(streams):
             ret = True
             try:
-                data = strm.read()
+                try:
+                    data = strm.read()
+                except Skype4Py.errors.SkypeError, e:
+                    traceback.print_exc()
+                    if config_ns.get('skype_strict_errors', False) and 'APPLICATION: operation failed' in str(e):
+                        global keep_running; keep_running = False
+                    continue
                 if DBG1: print 'received: %s: len(data)=%d' % (strm, len(data))
                 if DBG2: print 'received: %s: %r' % (strm, data)
                 im_tcp_tunneler.handle_message(strm.PartnerHandle, skype.CurrentUser.Handle, data)
@@ -69,13 +79,21 @@ def onApplicationReceiving(app_, streams):
 
 print 'your skypename:', skype.CurrentUser.Handle
 
-app = skype.Application('tcp-tunneler-1')
+# shutdown = False
+keep_running = True
+
+def interrupted(*args):
+    print 'interrupted (SIGHUP)'
+    # global shutdown; shutdown = True
+    global keep_running; keep_running = False
+signal.signal(signal.SIGHUP, interrupted)
+
+app = skype.Application(config_ns.get('skype_app_name', 'tcp-tunneler-1'))
 app.Create()
+    
 try:
     try:
         print 'app:', app
-
-        keep_running = True
 
         if 0:
             import code
@@ -93,6 +111,8 @@ try:
             dt = dt_max
 
             while keep_running:
+                # if shutdown:
+                #     keep_running = im_tcp_tunneler.get_num_of_connections() > 0
                 if onApplicationReceiving(app, app.ReceivedStreams):
                     dt /= 4.0
                 else:
